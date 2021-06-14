@@ -1,6 +1,7 @@
 ![App Logo][]
 
 Это репозиторий с исходным кодом для нашего приложения, написанного во время [Moscow city hack](https://moscityhack.innoagency.ru)
+[![Flutter version](https://img.shields.io/pypi/pyversions/ansicolortags.svg)](https://pypi.python.org/pypi/ansicolortags/)
 
 ## Описание
 
@@ -66,3 +67,24 @@ module_name/
 * `firestore` - база данных с обновлениями в реальном времени, хотели использовать для чата
 
 [app logo]: https://github.com/Dronicho/moscow_hack/blob/master/images/title.png
+### Getting Started
+Запуск в режиме отладки:
+```
+git clone https://github.com/Dronicho/moscow_hack.git
+cd moscow_hack
+flutter run
+```
+> Необходим запущенный эмулятор или подключенное устройство
+
+Для сборки релизной версии(она не лагает)
+#### Android
+```
+flutter build apk --split-per-abi
+flutter install
+```
+#### IOS
+```
+flutter build ios
+flutter install
+```
+Приложение будет установлено на подключенное устройство
