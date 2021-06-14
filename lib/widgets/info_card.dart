@@ -59,7 +59,7 @@ class UserCard extends StatelessWidget {
         children: [
           Text(user.name,
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
-          Text(_format.format(user.createdAt!)),
+          Text('в i.moscow с ${_format.format(user.createdAt!)}'),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(

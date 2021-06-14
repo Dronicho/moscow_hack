@@ -18,13 +18,13 @@ class User with _$User {
       required UserStats stats,
       List<String>? requestedProjects,
       DateTime? createdAt,
-      @JsonKey(name: 'photoURL')
-      String? photoUrl,
+      @JsonKey(name: 'photoURL') String? photoUrl,
       String? about,
       String? phone,
       String? socials,
       @JsonKey(name: 'SNILS') String? snils,
       @JsonKey(ignore: true) SendingAttachment? localImage,
+      @Default(const []) @JsonKey(ignore: true) List<String> outgoingProjects,
       @JsonKey(name: 'workExperience') List<WorkExperience?>? work,
       List<Education?>? education}) = _User;
 

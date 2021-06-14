@@ -104,31 +104,27 @@ class _MyEventsViewState extends State<MyEventsView> {
     _deviceCalendarPlugin = DeviceCalendarPlugin();
   }
 
-  void _addEvent(model.Event event) async {
+  Future<void> _addEvent(model.Event event) async {
     final _timezone = await FlutterNativeTimezone.getLocalTimezone();
     final permission = await _deviceCalendarPlugin.requestPermissions();
     if (permission.data != null && permission.data!) {
       final calendars = await _deviceCalendarPlugin.retrieveCalendars();
-      for (var i = 0; i < calendars.data!.length; i++) {
-        final element = calendars.data![i];
-        print(event.date);
-        final start = TZDateTime.from(
-            DateTime(event.date.year, event.date.month, event.date.day,
-                event.times[0].hour, event.times[0].minute),
-            timeZoneDatabase.locations[_timezone]!);
+      final element = calendars.data![1];
+      print(event.date);
+      final start = TZDateTime.from(
+          DateTime(event.date.year, event.date.month, event.date.day,
+              event.times[0].hour, event.times[0].minute),
+          timeZoneDatabase.locations[_timezone]!);
 
-        final duration = (event.times[1].hour * 60 + event.times[1].minute) -
-            (event.times[0].hour * 60 + event.times[0].minute);
-        final res = await _deviceCalendarPlugin.createOrUpdateEvent(Event(
-            element.id,
-            availability: Availability.Busy,
-            title: event.name,
-            start: start,
-            end: start.add(Duration(minutes: duration))));
-        print(res?.data);
-      }
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Все мероприятия успешно добавлены')));
+      final duration = (event.times[1].hour * 60 + event.times[1].minute) -
+          (event.times[0].hour * 60 + event.times[0].minute);
+      final res = await _deviceCalendarPlugin.createOrUpdateEvent(Event(
+          element.id,
+          availability: Availability.Busy,
+          title: event.name,
+          start: start,
+          end: start.add(Duration(minutes: duration))));
+      print(res?.data);
     }
   }
 
@@ -147,7 +143,13 @@ class _MyEventsViewState extends State<MyEventsView> {
                     child: Text(
                       'Добавить мероприятия в календарь',
                     ),
-                    onPressed: () => _addEvent(state.events[0]),
+                    onPressed: () async {
+                      for (var i = 0; i < state.events.length; i++) {
+                        await _addEvent(state.events[i]);
+                      }
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          content: Text('Все мероприятия успешно добавлены')));
+                    },
                   ),
                 );
               }

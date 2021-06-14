@@ -5,6 +5,7 @@ import 'package:moscow/domain/models/project.dart' show Project;
 import 'package:moscow/modules/start_team/bloc/project_cubit.dart';
 import 'package:moscow/modules/start_team/bloc/project_state.dart';
 import 'package:moscow/styles/colors.dart';
+import 'package:moscow/widgets/shimmers/container.dart';
 
 import 'project_detail_view.dart';
 
@@ -88,9 +89,12 @@ class _ProjectCardState extends State<ProjectCard> {
                 Hero(
                   tag: widget.tag,
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(4),
-                    child:
-                        CachedNetworkImage(imageUrl: widget.project.photoURL!),
+                    borderRadius: BorderRadius.circular(16),
+                    child: CachedNetworkImage(
+                      fadeInDuration: Duration(milliseconds: 50),
+                      imageUrl: widget.project.photoURL!,
+                      placeholder: (context, url) => ContainerShimmer(height: 170),
+                    ),
                   ),
                 ),
                 SizedBox(

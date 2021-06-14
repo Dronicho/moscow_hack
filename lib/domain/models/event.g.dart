@@ -13,7 +13,7 @@ _$_Event _$_$_EventFromJson(Map<String, dynamic> json) {
     name: json['name'] as String,
     description: json['description'] as String,
     type: json['type'] as String,
-    date: _parseDate(json['date'] as String),
+    date: _parseDate(json['date'] as int),
     times: _parseTime(json['time'] as String),
     fullDescription: json['fullDescription'] as String,
     location: json['location'] as String,

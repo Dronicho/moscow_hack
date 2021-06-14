@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart';
 import 'package:moscow/domain/models/project.dart';
-import 'package:moscow/domain/models/user.dart';
 import 'package:moscow/domain/utils/common_items.dart';
 import 'package:moscow/modules/app/bloc/app_cubit.dart';
 import 'package:moscow/modules/app/bloc/loading_cubit.dart';
@@ -13,17 +12,15 @@ import 'package:moscow/modules/home/screens/profile/widgets/skills_widget.dart';
 import 'package:moscow/modules/start_team/bloc/project_cubit.dart';
 import 'package:moscow/modules/start_team/bloc/project_state.dart'
     as cubit_state;
-import 'package:moscow/modules/start_team/widgets/messages/widgets/utils.dart';
 import 'package:moscow/modules/start_team/widgets/project/widgets/swipe_view.dart';
 import 'package:moscow/styles/colors.dart';
 import 'package:moscow/widgets/info_card.dart';
 import 'package:moscow/widgets/shimmers/user.dart';
 import 'package:moscow/widgets/widgets.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:open_file/open_file.dart';
+import 'package:intl/intl.dart';
 
 import 'widgets/user_list_view.dart';
 
@@ -171,7 +168,8 @@ class ProjectDetailView extends StatelessWidget {
                 builder: (context) => InfoPage(title: 'О проекте', data: [
                   InfoData(
                       title: 'Дата запуска',
-                      content: project.dateStart.toString()),
+                      content:
+                          DateFormat('dd.MM.yyyy').format(project.dateStart)),
                   InfoData(
                       title: 'Ресурсы и инфраструктура',
                       content: project.resources),
@@ -184,8 +182,9 @@ class ProjectDetailView extends StatelessWidget {
               if (project.isMember)
                 NavigationTile(
                     title: 'Список Участников',
-                    builder: (context) =>
-                        UserListView(users: project.members ?? [])),
+                    builder: (context) => UserListView(
+                        users: [project.owner!, ...(project.members ?? [])],
+                        project: project)),
               if (project.isOwner)
                 NavigationTile(
                     title: 'Заявки на участие',
@@ -196,11 +195,16 @@ class ProjectDetailView extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: PrimaryButton(
                     child: Text('Подать заявку'),
-                    onPressed: () async {
-                      context.read<LoadingCubit>().startLoading();
-                      await context.read<ProjectCubit>().addRequest(project);
-                      context.read<LoadingCubit>().stopLoading();
-                    },
+                    onPressed: project.requestedIds?.contains(
+                                context.read<AppCubit>().state.user.id) ??
+                            false
+                        ? null
+                        : () async {
+                            context.read<LoadingCubit>().startLoading();
+                            await context.read<ProjectCubit>().addRequest(
+                                project, context.read<AppCubit>().state.user);
+                            context.read<LoadingCubit>().stopLoading();
+                          },
                   ),
                 ),
               SizedBox(

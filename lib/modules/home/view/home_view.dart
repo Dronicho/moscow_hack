@@ -13,14 +13,14 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView>
     with SingleTickerProviderStateMixin {
   late PageController _controller;
-  int _index = 0;
+  int _index = 1;
 
   final _pages = <Widget>[ProfilePage(), MainView(), NotificationView()];
 
   @override
   void initState() {
     super.initState();
-    _controller = PageController(initialPage: 0);
+    _controller = PageController(initialPage: 1);
   }
 
   @override

@@ -35,7 +35,7 @@ class _MainViewState extends State<MainView> {
                   child: BlocBuilder<EventCubit, EventState>(
                       builder: (context, state) {
                     if (state is EventStateLoading) {
-                      return ContainerShimmer();
+                      return ContainerShimmer(height: 160);
                     }
                     if (state is EventStateLoaded) {
                       return EventCard(
@@ -172,7 +172,7 @@ class _MainViewState extends State<MainView> {
       itemBuilder: (context, index) {
         if (index == 0) {
           return Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 0, 16),
+            padding: const EdgeInsets.all(16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -198,4 +198,3 @@ class _MainViewState extends State<MainView> {
     );
   }
 }
-

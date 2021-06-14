@@ -27,7 +27,7 @@ class ProfilePage extends StatelessWidget {
         builder: (context, state) {
           final user = state.user;
           return Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -54,6 +54,7 @@ class ProfilePage extends StatelessWidget {
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ImageCard(
                         height: 150,
@@ -122,7 +123,7 @@ class ProfilePage extends StatelessWidget {
                       subtitle: user.education![0]!.specialty,
                       body: user.education![0]!.degree,
                       start: user.education![0]!.dateStart!,
-                      end: user.education![0]!.dateStart!),
+                      end: user.education![0]!.dateEnd!),
                 SizedBox(
                   height: 16,
                 ),
@@ -208,7 +209,7 @@ class DataCard extends StatelessWidget {
             Text(subtitle, style: TextStyle(fontSize: 16)),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 4.0),
-              child: Text(body, style: TextStyle(fontSize: 10)),
+              child: Text(body, style: TextStyle(fontSize: 14)),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

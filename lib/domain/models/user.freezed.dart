@@ -34,6 +34,7 @@ class _$UserTearOff {
       String? socials,
       @JsonKey(name: 'SNILS') String? snils,
       @JsonKey(ignore: true) SendingAttachment? localImage,
+      @JsonKey(ignore: true) List<String> outgoingProjects = const [],
       @JsonKey(name: 'workExperience') List<WorkExperience?>? work,
       List<Education?>? education}) {
     return _User(
@@ -50,6 +51,7 @@ class _$UserTearOff {
       socials: socials,
       snils: snils,
       localImage: localImage,
+      outgoingProjects: outgoingProjects,
       work: work,
       education: education,
     );
@@ -81,6 +83,8 @@ mixin _$User {
   String? get snils => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
   SendingAttachment? get localImage => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  List<String> get outgoingProjects => throw _privateConstructorUsedError;
   @JsonKey(name: 'workExperience')
   List<WorkExperience?>? get work => throw _privateConstructorUsedError;
   List<Education?>? get education => throw _privateConstructorUsedError;
@@ -108,6 +112,7 @@ abstract class $UserCopyWith<$Res> {
       String? socials,
       @JsonKey(name: 'SNILS') String? snils,
       @JsonKey(ignore: true) SendingAttachment? localImage,
+      @JsonKey(ignore: true) List<String> outgoingProjects,
       @JsonKey(name: 'workExperience') List<WorkExperience?>? work,
       List<Education?>? education});
 
@@ -137,6 +142,7 @@ class _$UserCopyWithImpl<$Res> implements $UserCopyWith<$Res> {
     Object? socials = freezed,
     Object? snils = freezed,
     Object? localImage = freezed,
+    Object? outgoingProjects = freezed,
     Object? work = freezed,
     Object? education = freezed,
   }) {
@@ -193,6 +199,10 @@ class _$UserCopyWithImpl<$Res> implements $UserCopyWith<$Res> {
           ? _value.localImage
           : localImage // ignore: cast_nullable_to_non_nullable
               as SendingAttachment?,
+      outgoingProjects: outgoingProjects == freezed
+          ? _value.outgoingProjects
+          : outgoingProjects // ignore: cast_nullable_to_non_nullable
+              as List<String>,
       work: work == freezed
           ? _value.work
           : work // ignore: cast_nullable_to_non_nullable
@@ -231,6 +241,7 @@ abstract class _$UserCopyWith<$Res> implements $UserCopyWith<$Res> {
       String? socials,
       @JsonKey(name: 'SNILS') String? snils,
       @JsonKey(ignore: true) SendingAttachment? localImage,
+      @JsonKey(ignore: true) List<String> outgoingProjects,
       @JsonKey(name: 'workExperience') List<WorkExperience?>? work,
       List<Education?>? education});
 
@@ -262,6 +273,7 @@ class __$UserCopyWithImpl<$Res> extends _$UserCopyWithImpl<$Res>
     Object? socials = freezed,
     Object? snils = freezed,
     Object? localImage = freezed,
+    Object? outgoingProjects = freezed,
     Object? work = freezed,
     Object? education = freezed,
   }) {
@@ -318,6 +330,10 @@ class __$UserCopyWithImpl<$Res> extends _$UserCopyWithImpl<$Res>
           ? _value.localImage
           : localImage // ignore: cast_nullable_to_non_nullable
               as SendingAttachment?,
+      outgoingProjects: outgoingProjects == freezed
+          ? _value.outgoingProjects
+          : outgoingProjects // ignore: cast_nullable_to_non_nullable
+              as List<String>,
       work: work == freezed
           ? _value.work
           : work // ignore: cast_nullable_to_non_nullable
@@ -348,6 +364,7 @@ class _$_User extends _User {
       this.socials,
       @JsonKey(name: 'SNILS') this.snils,
       @JsonKey(ignore: true) this.localImage,
+      @JsonKey(ignore: true) this.outgoingProjects = const [],
       @JsonKey(name: 'workExperience') this.work,
       this.education})
       : super._();
@@ -385,6 +402,9 @@ class _$_User extends _User {
   @JsonKey(ignore: true)
   final SendingAttachment? localImage;
   @override
+  @JsonKey(ignore: true)
+  final List<String> outgoingProjects;
+  @override
   @JsonKey(name: 'workExperience')
   final List<WorkExperience?>? work;
   @override
@@ -392,7 +412,7 @@ class _$_User extends _User {
 
   @override
   String toString() {
-    return 'User(id: $id, fio: $fio, email: $email, skills: $skills, stats: $stats, requestedProjects: $requestedProjects, createdAt: $createdAt, photoUrl: $photoUrl, about: $about, phone: $phone, socials: $socials, snils: $snils, localImage: $localImage, work: $work, education: $education)';
+    return 'User(id: $id, fio: $fio, email: $email, skills: $skills, stats: $stats, requestedProjects: $requestedProjects, createdAt: $createdAt, photoUrl: $photoUrl, about: $about, phone: $phone, socials: $socials, snils: $snils, localImage: $localImage, outgoingProjects: $outgoingProjects, work: $work, education: $education)';
   }
 
   @override
@@ -430,6 +450,9 @@ class _$_User extends _User {
             (identical(other.localImage, localImage) ||
                 const DeepCollectionEquality()
                     .equals(other.localImage, localImage)) &&
+            (identical(other.outgoingProjects, outgoingProjects) ||
+                const DeepCollectionEquality()
+                    .equals(other.outgoingProjects, outgoingProjects)) &&
             (identical(other.work, work) ||
                 const DeepCollectionEquality().equals(other.work, work)) &&
             (identical(other.education, education) ||
@@ -453,6 +476,7 @@ class _$_User extends _User {
       const DeepCollectionEquality().hash(socials) ^
       const DeepCollectionEquality().hash(snils) ^
       const DeepCollectionEquality().hash(localImage) ^
+      const DeepCollectionEquality().hash(outgoingProjects) ^
       const DeepCollectionEquality().hash(work) ^
       const DeepCollectionEquality().hash(education);
 
@@ -482,6 +506,7 @@ abstract class _User extends User {
       String? socials,
       @JsonKey(name: 'SNILS') String? snils,
       @JsonKey(ignore: true) SendingAttachment? localImage,
+      @JsonKey(ignore: true) List<String> outgoingProjects,
       @JsonKey(name: 'workExperience') List<WorkExperience?>? work,
       List<Education?>? education}) = _$_User;
   const _User._() : super._();
@@ -517,6 +542,9 @@ abstract class _User extends User {
   @override
   @JsonKey(ignore: true)
   SendingAttachment? get localImage => throw _privateConstructorUsedError;
+  @override
+  @JsonKey(ignore: true)
+  List<String> get outgoingProjects => throw _privateConstructorUsedError;
   @override
   @JsonKey(name: 'workExperience')
   List<WorkExperience?>? get work => throw _privateConstructorUsedError;

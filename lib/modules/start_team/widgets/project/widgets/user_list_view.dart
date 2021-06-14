@@ -1,15 +1,20 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:moscow/domain/models/project.dart';
 import 'package:moscow/domain/models/user.dart';
+import 'package:moscow/modules/app/bloc/app_cubit.dart';
 import 'package:moscow/styles/colors.dart';
 import 'package:moscow/widgets/widgets.dart';
 
 import 'like_modal.dart';
 
 class UserListView extends StatelessWidget {
-  const UserListView({Key? key, required this.users}) : super(key: key);
+  const UserListView({Key? key, required this.users, required this.project})
+      : super(key: key);
 
   final List<User> users;
+  final Project project;
 
   @override
   Widget build(BuildContext context) {
@@ -47,13 +52,18 @@ class UserListView extends StatelessWidget {
                       Expanded(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(user.name,
                                     style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w500)),
+                                Text(user.id == project.leaderId
+                                    ? 'Лидер'
+                                    : 'Участник')
                               ],
                             ),
                             SizedBox(
@@ -70,12 +80,23 @@ class UserListView extends StatelessWidget {
                                       final res = await showModalBottomSheet(
                                           backgroundColor: Colors.transparent,
                                           context: context,
-                                          builder: (context) => LikeModal(
-                                                user: user,
-                                                onPressed:
-                                                    (sat, shool, groups) =>
-                                                        null,
-                                              ));
+                                          builder: (context) {
+                                            if (context
+                                                    .read<AppCubit>()
+                                                    .state
+                                                    .user
+                                                    .id ==
+                                                user.id) {
+                                              return ErrorModal();
+                                            }
+                                            return LikeModal(
+                                              allowLeadership:
+                                                  user.id == project.leaderId,
+                                              user: user,
+                                              onPressed: (sat, shool, groups) =>
+                                                  null,
+                                            );
+                                          });
                                     }),
                                 SizedBox(width: 16),
                                 PrimaryIconButton(

@@ -4,6 +4,7 @@ import 'package:moscow/domain/models/project.dart' as model;
 import 'package:moscow/domain/models/user.dart';
 import 'package:moscow/domain/repositories/project.dart';
 import 'package:moscow/modules/app/bloc/app_cubit.dart';
+import 'package:moscow/modules/start_hub/bloc/hub_state.dart';
 import 'package:moscow/modules/start_team/bloc/project_state.dart';
 
 class ProjectCubit extends Cubit<ProjectState> {
@@ -14,8 +15,16 @@ class ProjectCubit extends Cubit<ProjectState> {
   UsersCubit _usersCubit;
   AppCubit bloc;
 
-  Future<void> addRequest(model.Project project) async {
+  Future<void> addRequest(model.Project project, User user) async {
     await _repository.addRequest(project);
+    final newProjects = (state as ProjectStateLoaded).projects.map((e) {
+      if (e.id == project.id) {
+        return e.copyWith(requestedIds: [...(e.requestedIds ?? []), user.id]);
+      }
+      return e;
+    }).toList();
+    emit(ProjectStateLoaded(
+        newProjects, (state as ProjectStateLoaded).myProjects));
   }
 
   Future<void> acceptRequest(model.Project project, User user) async {

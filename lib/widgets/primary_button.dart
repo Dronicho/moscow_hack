@@ -26,10 +26,11 @@ class PrimaryButton extends StatelessWidget {
         return AnimatedContainer(
             duration: Duration(milliseconds: 200),
             decoration: BoxDecoration(
-                gradient:
-                    onPressed != null && color == null ? primaryGradient : null,
-                color: onPressed == null ? secondaryWhite : color,
-                borderRadius: BorderRadius.circular(12)),
+                gradient: onPressed != null && color == null && !_loading
+                    ? primaryGradient
+                    : null,
+                color: secondaryWhite,
+                borderRadius: BorderRadius.circular(16)),
             child: AnimatedSwitcher(
               duration: Duration(milliseconds: 200),
               child: _loading
@@ -51,17 +52,21 @@ class PrimaryButton extends StatelessWidget {
                     )
                   : Container(
                       height: 50,
-                      child: InkWell(
-                        onTap: _loading ? null : onPressed,
-                        child: Center(child: BlocBuilder<LoadingCubit, bool>(
-                          builder: (context, state) {
-                            return DefaultTextStyle(
-                              child: child,
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 16),
-                            );
-                          },
-                        )),
+                      child: Material(
+                        type: MaterialType.transparency,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(16),
+                          onTap: _loading ? null : onPressed,
+                          child: Center(child: BlocBuilder<LoadingCubit, bool>(
+                            builder: (context, state) {
+                              return DefaultTextStyle(
+                                child: child,
+                                style: TextStyle(
+                                    color: Colors.black, fontSize: 16),
+                              );
+                            },
+                          )),
+                        ),
                       ),
                     ),
             ));

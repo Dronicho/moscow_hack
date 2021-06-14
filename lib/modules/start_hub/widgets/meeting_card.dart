@@ -4,7 +4,6 @@ import 'package:intl/intl.dart';
 import 'package:moscow/domain/models/event.dart';
 import 'package:moscow/styles/colors.dart';
 import 'package:moscow/widgets/shimmers/container.dart';
-import 'package:shimmer/shimmer.dart';
 
 class EventCard extends StatelessWidget {
   EventCard(
@@ -20,7 +19,7 @@ class EventCard extends StatelessWidget {
   final Object? tag;
   final bool running;
   final bool highlight;
-  final _format = DateFormat('dd MMM');
+  final _format = DateFormat('dd MMM', 'ru_RU');
 
   @override
   Widget build(BuildContext context) {
@@ -40,9 +39,9 @@ class EventCard extends StatelessWidget {
                       gradient: LinearGradient(
                     colors: [
                       Colors.black.withOpacity(0),
-                      Colors.black.withOpacity(0.6)
+                      Colors.black.withOpacity(0.8)
                     ],
-                    stops: [0.7, 1],
+                    stops: [0.4, 1],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                   )),
@@ -91,7 +90,7 @@ class EventCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      width: 400,
+                      width: 270,
                       child: Text(
                         event.name,
                         maxLines: null,
@@ -124,7 +123,7 @@ class EventCard extends StatelessWidget {
       res = CachedNetworkImage(
         fadeInDuration: Duration(milliseconds: 100),
         imageUrl: event.photoURL!,
-        placeholder: (context, url) => ContainerShimmer(),
+        placeholder: (context, url) => ContainerShimmer(height: 150),
       );
     } else {
       res = Container(

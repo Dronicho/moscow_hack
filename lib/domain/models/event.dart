@@ -24,9 +24,9 @@ class Event with _$Event {
   factory Event.fromJson(Map<String, dynamic> json) => _$EventFromJson(json);
 }
 
-DateTime _parseDate(String json) {
+DateTime _parseDate(int json) {
   print(json);
-  return DateTime.parse(json.split('.').reversed.join('-'));
+  return DateTime.fromMillisecondsSinceEpoch(json * 1000);
 }
 
 List<TimeOfDay> _parseTime(String json) {
