@@ -1,6 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:moscow/domain/models/user.dart';
 import 'package:moscow/styles/colors.dart';
+import 'package:intl/intl.dart';
 
 import 'primary_button.dart';
 
@@ -27,7 +30,6 @@ class ImageCard extends StatelessWidget {
         width: width,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          gradient: primaryGradient,
           image: imageUrl != null
               ? DecorationImage(
                   image: CachedNetworkImageProvider(imageUrl!),
@@ -36,6 +38,114 @@ class ImageCard extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class UserCard extends StatelessWidget {
+  UserCard({Key? key, required this.user}) : super(key: key);
+
+  final User user;
+  final _format = DateFormat('dd.MM.yyyy');
+
+  @override
+  Widget build(BuildContext context) {
+    final stats = user.stats;
+    print(stats);
+
+    return _InfoBase(
+        child: Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          Text(user.name,
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
+          Text(_format.format(user.createdAt!)),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                StatTile(
+                    value: stats.friendly,
+                    icon: Icons.sentiment_satisfied,
+                    title: 'Доброжелательный'),
+                StatTile(
+                    value: stats.competent,
+                    icon: Icons.school,
+                    title: 'Компетентен'),
+                StatTile(
+                    value: stats.leadership,
+                    icon: Icons.groups,
+                    title: 'Хороший лидер')
+              ],
+            ),
+          )
+        ],
+      ),
+    ));
+  }
+}
+
+class StatTile extends StatelessWidget {
+  const StatTile(
+      {Key? key, required this.value, required this.icon, required this.title})
+      : super(key: key);
+
+  final int value;
+  final IconData icon;
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Text(value.toString(),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+        SizedBox(
+          width: 8,
+        ),
+        Icon(icon),
+        SizedBox(
+          width: 8,
+        ),
+        Expanded(
+            child: Text(title, maxLines: null, style: TextStyle(fontSize: 12))),
+      ],
+    );
+  }
+}
+
+class RowCard extends StatelessWidget {
+  const RowCard(
+      {Key? key,
+      required this.title,
+      required this.value,
+      required this.onChange})
+      : super(key: key);
+
+  final String title;
+  final String value;
+  final void Function(String)? onChange;
+
+  @override
+  Widget build(BuildContext context) {
+    return _InfoBase(
+        onPressed: () async {
+          final res = await showDialog<String>(
+              context: context,
+              builder: (context) => EditCardDialog(value: value, name: title));
+          if (res != null) {
+            onChange?.call(res);
+          }
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child:
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            Text(title),
+            Text(value,
+                style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16))
+          ]),
+        ));
   }
 }
 

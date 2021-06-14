@@ -23,4 +23,8 @@ class Storage {
   String? get(key) {
     return _prefs.getString(key);
   }
+
+  Future<bool> delete(key) async {
+    return _prefs.remove(key);
+  }
 }

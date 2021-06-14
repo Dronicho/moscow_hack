@@ -25,7 +25,7 @@ class _$WorkExperienceTearOff {
       required String position,
       DateTime? dateStart,
       DateTime? dateEnd,
-      required List<String> responsibilities}) {
+      required String responsibilities}) {
     return _WorkExperience(
       name: name,
       position: position,
@@ -50,7 +50,7 @@ mixin _$WorkExperience {
   String get position => throw _privateConstructorUsedError;
   DateTime? get dateStart => throw _privateConstructorUsedError;
   DateTime? get dateEnd => throw _privateConstructorUsedError;
-  List<String> get responsibilities => throw _privateConstructorUsedError;
+  String get responsibilities => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -68,7 +68,7 @@ abstract class $WorkExperienceCopyWith<$Res> {
       String position,
       DateTime? dateStart,
       DateTime? dateEnd,
-      List<String> responsibilities});
+      String responsibilities});
 }
 
 /// @nodoc
@@ -108,7 +108,7 @@ class _$WorkExperienceCopyWithImpl<$Res>
       responsibilities: responsibilities == freezed
           ? _value.responsibilities
           : responsibilities // ignore: cast_nullable_to_non_nullable
-              as List<String>,
+              as String,
     ));
   }
 }
@@ -125,7 +125,7 @@ abstract class _$WorkExperienceCopyWith<$Res>
       String position,
       DateTime? dateStart,
       DateTime? dateEnd,
-      List<String> responsibilities});
+      String responsibilities});
 }
 
 /// @nodoc
@@ -167,7 +167,7 @@ class __$WorkExperienceCopyWithImpl<$Res>
       responsibilities: responsibilities == freezed
           ? _value.responsibilities
           : responsibilities // ignore: cast_nullable_to_non_nullable
-              as List<String>,
+              as String,
     ));
   }
 }
@@ -196,7 +196,7 @@ class _$_WorkExperience implements _WorkExperience {
   @override
   final DateTime? dateEnd;
   @override
-  final List<String> responsibilities;
+  final String responsibilities;
 
   @override
   String toString() {
@@ -249,7 +249,7 @@ abstract class _WorkExperience implements WorkExperience {
       required String position,
       DateTime? dateStart,
       DateTime? dateEnd,
-      required List<String> responsibilities}) = _$_WorkExperience;
+      required String responsibilities}) = _$_WorkExperience;
 
   factory _WorkExperience.fromJson(Map<String, dynamic> json) =
       _$_WorkExperience.fromJson;
@@ -264,7 +264,7 @@ abstract class _WorkExperience implements WorkExperience {
   @override
   DateTime? get dateEnd => throw _privateConstructorUsedError;
   @override
-  List<String> get responsibilities => throw _privateConstructorUsedError;
+  String get responsibilities => throw _privateConstructorUsedError;
   @override
   @JsonKey(ignore: true)
   _$WorkExperienceCopyWith<_WorkExperience> get copyWith =>

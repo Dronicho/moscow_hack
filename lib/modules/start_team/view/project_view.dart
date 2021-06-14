@@ -7,6 +7,7 @@ import 'package:moscow/modules/start_team/widgets/add_project/add_project_page.d
 import 'package:moscow/modules/start_team/widgets/messages/dialogs_screen.dart';
 import 'package:moscow/modules/start_team/widgets/project/projects_view.dart';
 import 'package:moscow/widgets/primary_icon_button.dart';
+import 'package:moscow/widgets/shimmers/event.dart';
 
 class ProjectView extends StatelessWidget {
   const ProjectView({Key? key}) : super(key: key);
@@ -43,12 +44,13 @@ class ProjectView extends StatelessWidget {
                 )
               ],
               bottom: TabBar(
+                isScrollable: true,
                 indicatorColor: Theme.of(context).primaryColor,
                 controller: DefaultTabController.of(context),
                 tabs: [
                   Tab(
                       child: Text(
-                    'Найти проект',
+                    'Найти проекты',
                     textAlign: TextAlign.center,
                     style: TextStyle(color: Colors.black),
                   )),

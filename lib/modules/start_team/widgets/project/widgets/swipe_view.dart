@@ -8,6 +8,7 @@ import 'package:moscow/modules/start_team/bloc/project_cubit.dart';
 import 'package:moscow/modules/start_team/bloc/project_state.dart';
 import 'package:moscow/styles/colors.dart';
 import 'package:moscow/widgets/primary_icon_button.dart';
+import 'package:moscow/widgets/shimmers/container.dart';
 import 'package:moscow/widgets/widgets.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -49,25 +50,20 @@ class _SwipeViewState extends State<SwipeView> {
                   .firstWhere((element) => element.id == widget.project.id);
 
               if (p.state == models.ProjectState.loading) {
-                return Shimmer.fromColors(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Container(
-                        height: 350,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12)),
-                      ),
-                    ),
-                    baseColor: Colors.grey[300]!,
-                    highlightColor: Colors.grey[100]!);
+                return ContainerShimmer(
+                  height: 350,
+                );
               }
               if (p.state == models.ProjectState.loaded) {
                 print('applicants');
                 print(p.applicants);
                 return Container(
                   child: SwipeCards(
-                    onLiked: (value) {},
+                    onLiked: (index) {
+                      context
+                          .read<ProjectCubit>()
+                          .acceptRequest(p, p.applicants![index]);
+                    },
                     onDismissed: (index) {
                       context
                           .read<ProjectCubit>()

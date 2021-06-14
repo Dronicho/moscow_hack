@@ -11,7 +11,7 @@ class WorkExperience with _$WorkExperience {
       required String position,
       DateTime? dateStart,
       DateTime? dateEnd,
-      required List<String> responsibilities}) = _WorkExperience;
+      required String responsibilities}) = _WorkExperience;
   factory WorkExperience.fromJson(Map<String, dynamic> json) =>
       _$WorkExperienceFromJson(json);
 }

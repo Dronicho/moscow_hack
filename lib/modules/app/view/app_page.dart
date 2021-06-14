@@ -77,7 +77,6 @@ class _AppViewState extends State<AppView> {
                   ],
                   child: BlocListener<AuthenticationBloc, AuthenticationState>(
                       listener: (context, state) {
-                        print(state.status);
                         switch (state.status) {
                           case AuthenticationStatus.authenticated:
                             context

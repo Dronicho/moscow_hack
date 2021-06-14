@@ -38,6 +38,8 @@ class _$ProjectTearOff {
       @JsonKey(name: 'teamIDs') List<String>? teamIds,
       @JsonKey(name: 'requestedIds') List<String>? requestedIds,
       @JsonKey(name: 'teamCapitan') String? leaderId,
+      @JsonKey(ignore: true) SendingAttachment? localImage = null,
+      @JsonKey(ignore: true) List<SendingAttachment>? localMaterials = null,
       @JsonKey(ignore: true) User? owner = null,
       @JsonKey(ignore: true) List<User>? members = null,
       @JsonKey(ignore: true) List<User>? applicants = null,
@@ -67,6 +69,8 @@ class _$ProjectTearOff {
       teamIds: teamIds,
       requestedIds: requestedIds,
       leaderId: leaderId,
+      localImage: localImage,
+      localMaterials: localMaterials,
       owner: owner,
       members: members,
       applicants: applicants,
@@ -113,6 +117,11 @@ mixin _$Project {
   List<String>? get requestedIds => throw _privateConstructorUsedError;
   @JsonKey(name: 'teamCapitan')
   String? get leaderId => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  SendingAttachment? get localImage => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  List<SendingAttachment>? get localMaterials =>
+      throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
   User? get owner => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -163,6 +172,8 @@ abstract class $ProjectCopyWith<$Res> {
       @JsonKey(name: 'teamIDs') List<String>? teamIds,
       @JsonKey(name: 'requestedIds') List<String>? requestedIds,
       @JsonKey(name: 'teamCapitan') String? leaderId,
+      @JsonKey(ignore: true) SendingAttachment? localImage,
+      @JsonKey(ignore: true) List<SendingAttachment>? localMaterials,
       @JsonKey(ignore: true) User? owner,
       @JsonKey(ignore: true) List<User>? members,
       @JsonKey(ignore: true) List<User>? applicants,
@@ -205,6 +216,8 @@ class _$ProjectCopyWithImpl<$Res> implements $ProjectCopyWith<$Res> {
     Object? teamIds = freezed,
     Object? requestedIds = freezed,
     Object? leaderId = freezed,
+    Object? localImage = freezed,
+    Object? localMaterials = freezed,
     Object? owner = freezed,
     Object? members = freezed,
     Object? applicants = freezed,
@@ -286,6 +299,14 @@ class _$ProjectCopyWithImpl<$Res> implements $ProjectCopyWith<$Res> {
           ? _value.leaderId
           : leaderId // ignore: cast_nullable_to_non_nullable
               as String?,
+      localImage: localImage == freezed
+          ? _value.localImage
+          : localImage // ignore: cast_nullable_to_non_nullable
+              as SendingAttachment?,
+      localMaterials: localMaterials == freezed
+          ? _value.localMaterials
+          : localMaterials // ignore: cast_nullable_to_non_nullable
+              as List<SendingAttachment>?,
       owner: owner == freezed
           ? _value.owner
           : owner // ignore: cast_nullable_to_non_nullable
@@ -368,6 +389,8 @@ abstract class _$ProjectCopyWith<$Res> implements $ProjectCopyWith<$Res> {
       @JsonKey(name: 'teamIDs') List<String>? teamIds,
       @JsonKey(name: 'requestedIds') List<String>? requestedIds,
       @JsonKey(name: 'teamCapitan') String? leaderId,
+      @JsonKey(ignore: true) SendingAttachment? localImage,
+      @JsonKey(ignore: true) List<SendingAttachment>? localMaterials,
       @JsonKey(ignore: true) User? owner,
       @JsonKey(ignore: true) List<User>? members,
       @JsonKey(ignore: true) List<User>? applicants,
@@ -412,6 +435,8 @@ class __$ProjectCopyWithImpl<$Res> extends _$ProjectCopyWithImpl<$Res>
     Object? teamIds = freezed,
     Object? requestedIds = freezed,
     Object? leaderId = freezed,
+    Object? localImage = freezed,
+    Object? localMaterials = freezed,
     Object? owner = freezed,
     Object? members = freezed,
     Object? applicants = freezed,
@@ -493,6 +518,14 @@ class __$ProjectCopyWithImpl<$Res> extends _$ProjectCopyWithImpl<$Res>
           ? _value.leaderId
           : leaderId // ignore: cast_nullable_to_non_nullable
               as String?,
+      localImage: localImage == freezed
+          ? _value.localImage
+          : localImage // ignore: cast_nullable_to_non_nullable
+              as SendingAttachment?,
+      localMaterials: localMaterials == freezed
+          ? _value.localMaterials
+          : localMaterials // ignore: cast_nullable_to_non_nullable
+              as List<SendingAttachment>?,
       owner: owner == freezed
           ? _value.owner
           : owner // ignore: cast_nullable_to_non_nullable
@@ -559,6 +592,8 @@ class _$_Project implements _Project {
       @JsonKey(name: 'teamIDs') this.teamIds,
       @JsonKey(name: 'requestedIds') this.requestedIds,
       @JsonKey(name: 'teamCapitan') this.leaderId,
+      @JsonKey(ignore: true) this.localImage = null,
+      @JsonKey(ignore: true) this.localMaterials = null,
       @JsonKey(ignore: true) this.owner = null,
       @JsonKey(ignore: true) this.members = null,
       @JsonKey(ignore: true) this.applicants = null,
@@ -615,6 +650,12 @@ class _$_Project implements _Project {
   final String? leaderId;
   @override
   @JsonKey(ignore: true)
+  final SendingAttachment? localImage;
+  @override
+  @JsonKey(ignore: true)
+  final List<SendingAttachment>? localMaterials;
+  @override
+  @JsonKey(ignore: true)
   final User? owner;
   @override
   @JsonKey(ignore: true)
@@ -649,7 +690,7 @@ class _$_Project implements _Project {
 
   @override
   String toString() {
-    return 'Project(id: $id, name: $name, photoURL: $photoURL, area: $area, description: $description, advantage: $advantage, stage: $stage, intellectualProperty: $intellectualProperty, additionalMaterials: $additionalMaterials, needs: $needs, marketApplication: $marketApplication, competitors: $competitors, dateStart: $dateStart, skills: $skills, teamIds: $teamIds, requestedIds: $requestedIds, leaderId: $leaderId, owner: $owner, members: $members, applicants: $applicants, isOwner: $isOwner, isMember: $isMember, state: $state, experience: $experience, resources: $resources, status: $status, model: $model, plan: $plan)';
+    return 'Project(id: $id, name: $name, photoURL: $photoURL, area: $area, description: $description, advantage: $advantage, stage: $stage, intellectualProperty: $intellectualProperty, additionalMaterials: $additionalMaterials, needs: $needs, marketApplication: $marketApplication, competitors: $competitors, dateStart: $dateStart, skills: $skills, teamIds: $teamIds, requestedIds: $requestedIds, leaderId: $leaderId, localImage: $localImage, localMaterials: $localMaterials, owner: $owner, members: $members, applicants: $applicants, isOwner: $isOwner, isMember: $isMember, state: $state, experience: $experience, resources: $resources, status: $status, model: $model, plan: $plan)';
   }
 
   @override
@@ -701,6 +742,12 @@ class _$_Project implements _Project {
             (identical(other.leaderId, leaderId) ||
                 const DeepCollectionEquality()
                     .equals(other.leaderId, leaderId)) &&
+            (identical(other.localImage, localImage) ||
+                const DeepCollectionEquality()
+                    .equals(other.localImage, localImage)) &&
+            (identical(other.localMaterials, localMaterials) ||
+                const DeepCollectionEquality()
+                    .equals(other.localMaterials, localMaterials)) &&
             (identical(other.owner, owner) ||
                 const DeepCollectionEquality().equals(other.owner, owner)) &&
             (identical(other.members, members) ||
@@ -718,13 +765,9 @@ class _$_Project implements _Project {
             (identical(other.state, state) ||
                 const DeepCollectionEquality().equals(other.state, state)) &&
             (identical(other.experience, experience) ||
-                const DeepCollectionEquality()
-                    .equals(other.experience, experience)) &&
-            (identical(other.resources, resources) ||
-                const DeepCollectionEquality()
-                    .equals(other.resources, resources)) &&
-            (identical(other.status, status) ||
-                const DeepCollectionEquality().equals(other.status, status)) &&
+                const DeepCollectionEquality().equals(other.experience, experience)) &&
+            (identical(other.resources, resources) || const DeepCollectionEquality().equals(other.resources, resources)) &&
+            (identical(other.status, status) || const DeepCollectionEquality().equals(other.status, status)) &&
             (identical(other.model, model) || const DeepCollectionEquality().equals(other.model, model)) &&
             (identical(other.plan, plan) || const DeepCollectionEquality().equals(other.plan, plan)));
   }
@@ -749,6 +792,8 @@ class _$_Project implements _Project {
       const DeepCollectionEquality().hash(teamIds) ^
       const DeepCollectionEquality().hash(requestedIds) ^
       const DeepCollectionEquality().hash(leaderId) ^
+      const DeepCollectionEquality().hash(localImage) ^
+      const DeepCollectionEquality().hash(localMaterials) ^
       const DeepCollectionEquality().hash(owner) ^
       const DeepCollectionEquality().hash(members) ^
       const DeepCollectionEquality().hash(applicants) ^
@@ -791,6 +836,8 @@ abstract class _Project implements Project {
       @JsonKey(name: 'teamIDs') List<String>? teamIds,
       @JsonKey(name: 'requestedIds') List<String>? requestedIds,
       @JsonKey(name: 'teamCapitan') String? leaderId,
+      @JsonKey(ignore: true) SendingAttachment? localImage,
+      @JsonKey(ignore: true) List<SendingAttachment>? localMaterials,
       @JsonKey(ignore: true) User? owner,
       @JsonKey(ignore: true) List<User>? members,
       @JsonKey(ignore: true) List<User>? applicants,
@@ -844,6 +891,13 @@ abstract class _Project implements Project {
   @override
   @JsonKey(name: 'teamCapitan')
   String? get leaderId => throw _privateConstructorUsedError;
+  @override
+  @JsonKey(ignore: true)
+  SendingAttachment? get localImage => throw _privateConstructorUsedError;
+  @override
+  @JsonKey(ignore: true)
+  List<SendingAttachment>? get localMaterials =>
+      throw _privateConstructorUsedError;
   @override
   @JsonKey(ignore: true)
   User? get owner => throw _privateConstructorUsedError;

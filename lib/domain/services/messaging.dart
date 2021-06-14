@@ -2,12 +2,12 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 class Messaging {
-  final _messaging = FirebaseMessaging.instance;
+  final messaging = FirebaseMessaging.instance;
 
   Messaging();
 
   Future<Messaging> init() async {
-    NotificationSettings settings = await _messaging.requestPermission(
+    NotificationSettings settings = await messaging.requestPermission(
       alert: true,
       announcement: false,
       badge: true,
@@ -29,7 +29,7 @@ class Messaging {
     });
 
     print('User granted permission: ${settings.authorizationStatus}');
-    print(await _messaging.getToken());
+    print(await messaging.getToken());
     return this;
   }
 }

@@ -18,7 +18,7 @@ class AddProjectCubit extends Cubit<AddProjectState> {
           photoURL: '',
           area: '',
           plan: '',
-          stage: '',
+          stage: 'идея',
           status: '',
           competitors: '',
           intellectualProperty: '',

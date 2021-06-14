@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:moscow/domain/models/event.dart';
 import 'package:moscow/styles/colors.dart';
+import 'package:moscow/widgets/shimmers/container.dart';
 import 'package:shimmer/shimmer.dart';
 
 class EventCard extends StatelessWidget {
@@ -123,19 +124,11 @@ class EventCard extends StatelessWidget {
       res = CachedNetworkImage(
         fadeInDuration: Duration(milliseconds: 100),
         imageUrl: event.photoURL!,
-        placeholder: (context, url) => Shimmer.fromColors(
-          enabled: true,
-          child: Container(
-            color: Colors.white,
-            height: 200,
-          ),
-          baseColor: Colors.grey[300]!,
-          highlightColor: Colors.grey[100]!,
-        ),
+        placeholder: (context, url) => ContainerShimmer(),
       );
     } else {
       res = Container(
-        height: 200,
+        height: 250,
         decoration: BoxDecoration(
             gradient: LinearGradient(
                 colors: [Color(0xff8E2DE2), Color(0xFF4A00E0)],

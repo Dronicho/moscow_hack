@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:moscow/domain/models/project.dart' show Project;
 import 'package:moscow/modules/start_team/bloc/project_cubit.dart';
 import 'package:moscow/modules/start_team/bloc/project_state.dart';
+import 'package:moscow/styles/colors.dart';
 
 import 'project_detail_view.dart';
 
@@ -38,71 +39,80 @@ class _ProjectCardState extends State<ProjectCard> {
   @override
   Widget build(BuildContext context) {
     print(widget.project.state);
-    return Material(
-      elevation: 3,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: InkWell(
-        onTap: () {
-          final bloc = context.read<ProjectCubit>();
-          bloc.loadProject(widget.project);
-          Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => BlocProvider<ProjectCubit>.value(
-                  value: bloc,
-                  child: BlocBuilder<ProjectCubit, ProjectState>(
-                      builder: (context, state) {
-                    final s = state as ProjectStateLoaded;
-                    final p = [
-                      ...s.myProjects,
-                      ...s.projects
-                    ].firstWhere((element) => element.id == widget.project.id);
-                    return ProjectDetailView(tag: widget.tag, project: p);
-                  }))));
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Flexible(
-                flex: 1,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Hero(
-                      tag: widget.tag,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(4),
-                        child: CachedNetworkImage(
-                            imageUrl: widget.project.photoURL!),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Text(widget.project.area,
-                          style: TextStyle(fontWeight: FontWeight.w500)),
-                    ),
-                    Text(widget.project.name,
-                        style: TextStyle(
-                            fontWeight: FontWeight.w500, fontSize: 24))
-                  ],
+    return Container(
+      decoration: BoxDecoration(
+          boxShadow: primaryShadow,
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16)),
+      child: Material(
+        type: MaterialType.transparency,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: () {
+            final bloc = context.read<ProjectCubit>();
+            bloc.loadProject(widget.project);
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => BlocProvider<ProjectCubit>.value(
+                    value: bloc,
+                    child: BlocBuilder<ProjectCubit, ProjectState>(
+                        builder: (context, state) {
+                      final s = state as ProjectStateLoaded;
+                      final p = [...s.myProjects, ...s.projects].firstWhere(
+                          (element) => element.id == widget.project.id);
+                      return ProjectDetailView(tag: widget.tag, project: p);
+                    }))));
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Row(
+                //   crossAxisAlignment: CrossAxisAlignment.start,
+                //   children: [
+                //     Flexible(
+                //       flex: 1,
+                //       child: ,
+                //     ),
+                //     SizedBox(width: 5),
+                //     Flexible(
+                //       flex: 1,
+                //       child: Column(
+                //         children: [
+
+                //         ],
+                //       ),
+                //     ),
+                //   ],
+                // ),
+                Hero(
+                  tag: widget.tag,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child:
+                        CachedNetworkImage(imageUrl: widget.project.photoURL!),
+                  ),
                 ),
-              ),
-              SizedBox(
-                width: 9,
-              ),
-              Flexible(
-                flex: 1,
-                child: Column(
-                  children: [
-                    Text(
-                      widget.project.description,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 6,
-                    ),
-                  ],
+                SizedBox(
+                  height: 8,
                 ),
-              ),
-            ],
+                Text(widget.project.name,
+                    style:
+                        TextStyle(fontWeight: FontWeight.w500, fontSize: 24)),
+
+                SizedBox(
+                  height: 8,
+                ),
+                Text(
+                  widget.project.description,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 6,
+                ),
+                SizedBox(
+                  height: 16,
+                ),
+              ],
+            ),
           ),
         ),
       ),

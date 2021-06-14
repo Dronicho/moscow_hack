@@ -1,12 +1,17 @@
+import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:moscow/domain/models/event.dart' as model;
 import 'package:moscow/modules/start_hub/bloc/hub_cubit.dart';
 import 'package:moscow/modules/start_hub/bloc/hub_state.dart';
 import 'package:moscow/modules/start_hub/widgets/meeting_card.dart';
 import 'package:moscow/modules/start_hub/widgets/meeting_detail_page.dart';
 import 'package:moscow/widgets/primary_icon_button.dart';
+import 'package:moscow/widgets/shimmers/event.dart';
 import 'package:moscow/widgets/widgets.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:timezone/timezone.dart';
+import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 
 class StartHubView extends StatelessWidget {
   const StartHubView({Key? key}) : super(key: key);
@@ -69,37 +74,7 @@ class StartHubView extends StatelessWidget {
                                       },
                                       tag: index)),
                             )),
-                    ListView.builder(
-                        itemCount: state.events.length + 1,
-                        itemBuilder: (context, index) {
-                          if (index == 0) {
-                            return Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: PrimaryButton(
-                                child: Text(
-                                  'Добавить мероприятия в календарь',
-                                ),
-                                onPressed: () {},
-                              ),
-                            );
-                          }
-                          return Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Container(
-                                child: EventCard(
-                                    event: state.events[index - 1],
-                                    onPressed: () {
-                                      Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  MeetingDetailPage(
-                                                      event: state
-                                                          .events[index - 1],
-                                                      tag: index)));
-                                    },
-                                    tag: index)),
-                          );
-                        })
+                    MyEventsView()
                   ],
                 );
               return Container();
@@ -111,35 +86,85 @@ class StartHubView extends StatelessWidget {
   }
 }
 
-class EventsShimmer extends StatelessWidget {
-  const EventsShimmer({Key? key}) : super(key: key);
+class MyEventsView extends StatefulWidget {
+  const MyEventsView({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  _MyEventsViewState createState() => _MyEventsViewState();
+}
+
+class _MyEventsViewState extends State<MyEventsView> {
+  late DeviceCalendarPlugin _deviceCalendarPlugin;
+
+  @override
+  void initState() {
+    super.initState();
+    _deviceCalendarPlugin = DeviceCalendarPlugin();
+  }
+
+  void _addEvent(model.Event event) async {
+    final _timezone = await FlutterNativeTimezone.getLocalTimezone();
+    final permission = await _deviceCalendarPlugin.requestPermissions();
+    if (permission.data != null && permission.data!) {
+      final calendars = await _deviceCalendarPlugin.retrieveCalendars();
+      for (var i = 0; i < calendars.data!.length; i++) {
+        final element = calendars.data![i];
+        print(event.date);
+        final start = TZDateTime.from(
+            DateTime(event.date.year, event.date.month, event.date.day,
+                event.times[0].hour, event.times[0].minute),
+            timeZoneDatabase.locations[_timezone]!);
+
+        final duration = (event.times[1].hour * 60 + event.times[1].minute) -
+            (event.times[0].hour * 60 + event.times[0].minute);
+        final res = await _deviceCalendarPlugin.createOrUpdateEvent(Event(
+            element.id,
+            availability: Availability.Busy,
+            title: event.name,
+            start: start,
+            end: start.add(Duration(minutes: duration))));
+        print(res?.data);
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Все мероприятия успешно добавлены')));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Shimmer.fromColors(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                height: 150,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    color: Colors.white),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                height: 150,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    color: Colors.white),
-              ),
-            )
-          ],
-        ),
-        baseColor: Colors.grey[300]!,
-        highlightColor: Colors.grey[100]!);
+    return BlocBuilder<EventCubit, EventState>(
+      builder: (context, s) {
+        final state = s as EventStateLoaded;
+        return ListView.builder(
+            itemCount: state.events.length + 1,
+            itemBuilder: (context, index) {
+              if (index == 0) {
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: PrimaryButton(
+                    child: Text(
+                      'Добавить мероприятия в календарь',
+                    ),
+                    onPressed: () => _addEvent(state.events[0]),
+                  ),
+                );
+              }
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                    child: EventCard(
+                        event: state.events[index - 1],
+                        onPressed: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => MeetingDetailPage(
+                                  event: state.events[index - 1], tag: index)));
+                        },
+                        tag: index)),
+              );
+            });
+      },
+    );
   }
 }

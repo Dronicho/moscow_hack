@@ -5,10 +5,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:moscow/modules/start_team/bloc/project_cubit.dart';
 import 'package:moscow/modules/start_team/widgets/add_project/bloc/add_project_cubit.dart';
+import 'package:moscow/modules/start_team/widgets/messages/widgets/new_input.dart';
+import 'package:moscow/styles/colors.dart';
 import 'package:moscow/widgets/gradient_border.dart';
 import 'package:moscow/widgets/image_loader.dart';
+import 'package:moscow/widgets/input_fields/fields.dart';
+import 'package:moscow/widgets/shimmers/container.dart';
 import 'package:moscow/widgets/widgets.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:intl/intl.dart';
 
 import 'bloc/add_project_state.dart';
 
@@ -45,7 +50,7 @@ class _AddProjectViewState extends State<AddProjectView> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Text('Регистрация',
+                            Text('Создать проект',
                                 style: Theme.of(context).textTheme.headline6),
                             Text(_messages[_index])
                           ],
@@ -57,6 +62,7 @@ class _AddProjectViewState extends State<AddProjectView> {
                 )
               ],
               body: TabBarView(
+                physics: NeverScrollableScrollPhysics(),
                 children: [
                   BlocBuilder<AddProjectCubit, AddProjectState>(
                     builder: (context, state) {
@@ -65,7 +71,6 @@ class _AddProjectViewState extends State<AddProjectView> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           ProjectField(
-                              hint: 'Название',
                               initText: state.project.name,
                               title: 'Название проекта',
                               onChanged: (value) {
@@ -73,15 +78,24 @@ class _AddProjectViewState extends State<AddProjectView> {
                                     state.project.copyWith(name: value));
                               }),
                           ProjectField(
-                              hint: 'Отрасль',
                               initText: state.project.area,
-                              title: 'Название проекта',
+                              title: 'Область',
                               onChanged: (value) {
                                 context.read<AddProjectCubit>().stateChanged(
                                     state.project.copyWith(area: value));
                               }),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: UploadField(
+                                value: state.project.localImage,
+                                title: 'Обложка проекта',
+                                onChanged: (value) {
+                                  context.read<AddProjectCubit>().stateChanged(
+                                      state.project
+                                          .copyWith(localImage: value));
+                                }),
+                          ),
                           ProjectField(
-                              hint: 'Описание',
                               initText: state.project.description,
                               title: 'Описание',
                               onChanged: (value) {
@@ -112,23 +126,39 @@ class _AddProjectViewState extends State<AddProjectView> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           ProjectField(
-                              hint: 'Преимущество',
                               initText: state.project.advantage,
                               title: 'Уникальное преимущество',
                               onChanged: (value) {
                                 context.read<AddProjectCubit>().stateChanged(
                                     state.project.copyWith(advantage: value));
                               }),
-                          ProjectField(
-                              hint: 'Стадия',
-                              initText: state.project.stage,
+                          DropdownField(
+                              values: [
+                                'идея',
+                                'демонстрационный образец',
+                                'продукт',
+                                'масштабирование'
+                              ],
+                              value: state.project.stage,
                               title: 'Стадия готовности',
                               onChanged: (value) {
-                                context.read<AddProjectCubit>().stateChanged(
-                                    state.project.copyWith(stage: value));
+                                if (value != null) {
+                                  context.read<AddProjectCubit>().stateChanged(
+                                      state.project.copyWith(stage: value));
+                                }
                               }),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: MultiUploadField(
+                                value: state.project.localMaterials,
+                                title: 'Дополнительные проекты',
+                                onChanged: (urls) {
+                                  context.read<AddProjectCubit>().stateChanged(
+                                      state.project
+                                          .copyWith(localMaterials: urls));
+                                }),
+                          ),
                           ProjectField(
-                              hint: 'Интеллектуальная собственность',
                               initText: state.project.intellectualProperty,
                               title: 'Интеллектуальная собственность',
                               onChanged: (value) {
@@ -140,10 +170,23 @@ class _AddProjectViewState extends State<AddProjectView> {
                           Padding(
                             padding: const EdgeInsets.all(16.0),
                             child: PrimaryButton(
+                              color: Theme.of(context).disabledColor,
+                              child: Text('Назад'),
+                              onPressed: () {
+                                setState(() {
+                                  _index = 0;
+                                });
+                                DefaultTabController.of(context)!.animateTo(0);
+                              },
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: PrimaryButton(
                               child: Text('Далее'),
                               onPressed: () {
                                 setState(() {
-                                  _index = _index + 1;
+                                  _index = 2;
                                 });
                                 DefaultTabController.of(context)!.animateTo(2);
                               },
@@ -161,7 +204,6 @@ class _AddProjectViewState extends State<AddProjectView> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             ProjectField(
-                                hint: 'Проблема',
                                 initText: state.project.needs,
                                 title: 'Потребность / проблема',
                                 onChanged: (value) {
@@ -169,7 +211,6 @@ class _AddProjectViewState extends State<AddProjectView> {
                                       state.project.copyWith(needs: value));
                                 }),
                             ProjectField(
-                                hint: '',
                                 initText: state.project.marketApplication,
                                 title: 'Рыночное применение',
                                 onChanged: (value) {
@@ -177,16 +218,7 @@ class _AddProjectViewState extends State<AddProjectView> {
                                       state.project
                                           .copyWith(marketApplication: value));
                                 }),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: UploadField(
-                                  initText: '',
-                                  title: 'Обложка проекта',
-                                  hint: 'hint',
-                                  onChanged: (value) {}),
-                            ),
                             ProjectField(
-                                hint: '',
                                 initText: state.project.competitors,
                                 title: 'Конкуренты',
                                 onChanged: (value) {
@@ -195,6 +227,20 @@ class _AddProjectViewState extends State<AddProjectView> {
                                           .copyWith(competitors: value));
                                 }),
                             // Spacer(),
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: PrimaryButton(
+                                color: Theme.of(context).disabledColor,
+                                child: Text('Назад'),
+                                onPressed: () {
+                                  setState(() {
+                                    _index = 1;
+                                  });
+                                  DefaultTabController.of(context)!
+                                      .animateTo(1);
+                                },
+                              ),
+                            ),
                             Padding(
                               padding: const EdgeInsets.all(16.0),
                               child: PrimaryButton(
@@ -220,25 +266,22 @@ class _AddProjectViewState extends State<AddProjectView> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            ProjectField(
-                                hint: 'Дата',
-                                initText: state.project.dateStart.toString(),
+                            DatePickerField(
+                                value: state.project.dateStart,
                                 title: 'Дата запуска',
-                                onChanged: (value) {
+                                onChanged: (date) {
                                   context.read<AddProjectCubit>().stateChanged(
-                                      state.project.copyWith(
-                                          dateStart: DateTime.parse(value)));
+                                      state.project.copyWith(dateStart: date));
                                 }),
                             ProjectField(
-                                hint: 'Стадия',
-                                initText: state.project.stage,
+                                initText: state.project.experience,
                                 title: 'Опыт лидера',
                                 onChanged: (value) {
                                   context.read<AddProjectCubit>().stateChanged(
-                                      state.project.copyWith(stage: value));
+                                      state.project
+                                          .copyWith(experience: value));
                                 }),
                             ProjectField(
-                                hint: 'ресу',
                                 initText: state.project.resources,
                                 title: 'Ресурсы и инфраструктура',
                                 onChanged: (value) {
@@ -246,7 +289,6 @@ class _AddProjectViewState extends State<AddProjectView> {
                                       state.project.copyWith(resources: value));
                                 }),
                             ProjectField(
-                                hint: '',
                                 initText: state.project.status,
                                 title: 'Текущее состояние проекта',
                                 onChanged: (value) {
@@ -254,7 +296,6 @@ class _AddProjectViewState extends State<AddProjectView> {
                                       state.project.copyWith(status: value));
                                 }),
                             ProjectField(
-                                hint: '',
                                 initText: state.project.model,
                                 title: 'Модель внедрения',
                                 onChanged: (value) {
@@ -262,7 +303,6 @@ class _AddProjectViewState extends State<AddProjectView> {
                                       state.project.copyWith(model: value));
                                 }),
                             ProjectField(
-                                hint: '',
                                 initText: state.project.plan,
                                 title: 'План развития',
                                 onChanged: (value) {
@@ -270,6 +310,20 @@ class _AddProjectViewState extends State<AddProjectView> {
                                       state.project.copyWith(plan: value));
                                 }),
                             // Spacer(),
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: PrimaryButton(
+                                color: Theme.of(context).disabledColor,
+                                child: Text('Назад'),
+                                onPressed: () {
+                                  setState(() {
+                                    _index = 2;
+                                  });
+                                  DefaultTabController.of(context)!
+                                      .animateTo(2);
+                                },
+                              ),
+                            ),
                             Padding(
                               padding: const EdgeInsets.all(16.0),
                               child: PrimaryButton(
@@ -295,169 +349,6 @@ class _AddProjectViewState extends State<AddProjectView> {
           ),
         );
       }),
-    );
-  }
-}
-
-class UploadField extends StatefulWidget {
-  const UploadField(
-      {Key? key,
-      required this.initText,
-      required this.title,
-      required this.hint,
-      required this.onChanged})
-      : super(key: key);
-
-  final String initText;
-  final String title;
-  final String hint;
-  final ValueChanged<String> onChanged;
-
-  @override
-  _UploadFieldState createState() => _UploadFieldState();
-}
-
-class _UploadFieldState extends State<UploadField> {
-  File? _image;
-  bool _loading = false;
-
-  @override
-  Widget build(BuildContext context) {
-    var child;
-    if (_loading) {
-      child = GradientBorderContainer(
-          strokeWidth: 1,
-          radius: 8,
-          child: Shimmer.fromColors(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 1.0),
-                child: Container(
-                  height: 150,
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8)),
-                  width: MediaQuery.of(context).size.width - 18,
-                ),
-              ),
-              baseColor: Colors.grey[300]!,
-              highlightColor: Colors.grey[100]!),
-          onPressed: () async {
-            setState(() {
-              _loading = true;
-            });
-            final data = await ImageLoader.of(context)!.uploadImage();
-            setState(() {
-              _loading = false;
-              _image = data.file;
-            });
-          });
-    } else if (_image == null) {
-      child = GradientBorderContainer(
-          strokeWidth: 1,
-          radius: 8,
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(widget.title, style: TextStyle(fontSize: 16)),
-                Text('нажмите, чтобы выбрать изображение')
-              ],
-            ),
-          ),
-          onPressed: () async {
-            setState(() {
-              _loading = true;
-            });
-            final data = await ImageLoader.of(context)!.uploadImage();
-            setState(() {
-              _loading = false;
-              _image = data.file;
-            });
-          });
-    } else {
-      child = GradientBorderContainer(
-        strokeWidth: 1,
-        radius: 8,
-        child: Expanded(
-            child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Stack(
-                  children: [
-                    Image.memory(_image!.readAsBytesSync()),
-                    Positioned(
-                      height: 30,
-                      width: 30,
-                      top: 16,
-                      right: 16,
-                      child: RawMaterialButton(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        elevation: 1,
-                        highlightElevation: 0,
-                        focusElevation: 0,
-                        disabledElevation: 0,
-                        hoverElevation: 0,
-                        onPressed: () {
-                          setState(() {
-                            _image = null;
-                          });
-                        },
-                        fillColor: Colors.grey.withOpacity(1),
-                        child: Center(
-                          child:
-                              Icon(Icons.close, size: 18, color: Colors.white),
-                        ),
-                      ),
-                    )
-                  ],
-                ))),
-      );
-    }
-
-    return child;
-  }
-}
-
-class ProjectField extends HookWidget {
-  final String initText;
-  final String title;
-  final String hint;
-  final ValueChanged<String> onChanged;
-
-  const ProjectField(
-      {required this.hint,
-      required this.initText,
-      required this.title,
-      required this.onChanged,
-      Key? key})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final controller = useTextEditingController(text: initText);
-
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title),
-          SizedBox(
-            height: 5,
-          ),
-          TextField(
-            maxLines: null,
-            controller: controller,
-            onChanged: onChanged,
-            decoration: InputDecoration(
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                hintText: hint),
-          )
-        ],
-      ),
     );
   }
 }

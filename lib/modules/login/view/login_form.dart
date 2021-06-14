@@ -144,16 +144,13 @@ class _LoginButton extends StatelessWidget {
       buildWhen: (previous, current) => previous.status != current.status,
       builder: (context, state) {
         return PrimaryButton(
-          onPressed: state.status.isValidated
-              ? () {
-                  context.read<LoginCubit>().logInWithCredentials();
-                }
-              : null,
-          child: state.status.isSubmissionInProgress
-              ? CircularProgressIndicator()
-              : Text(
-                  'Войти',
-                ),
+          loading: state.status.isSubmissionInProgress,
+          onPressed: () {
+            context.read<LoginCubit>().logInWithCredentials();
+          },
+          child: Text(
+            'Войти',
+          ),
         );
       },
     );

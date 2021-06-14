@@ -16,9 +16,7 @@ _$_WorkExperience _$_$_WorkExperienceFromJson(Map<String, dynamic> json) {
     dateEnd: json['dateEnd'] == null
         ? null
         : DateTime.parse(json['dateEnd'] as String),
-    responsibilities: (json['responsibilities'] as List<dynamic>)
-        .map((e) => e as String)
-        .toList(),
+    responsibilities: json['responsibilities'] as String,
   );
 }
 

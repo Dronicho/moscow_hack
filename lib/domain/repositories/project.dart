@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:moscow/domain/models/event.dart';
 import 'package:moscow/domain/models/project.dart';
 import 'package:moscow/domain/models/user.dart';
 import 'package:moscow/domain/repositories/base_repostitory.dart';
@@ -11,8 +10,6 @@ class ProjectRepository extends BaseRepository {
     final res =
         await api.client.get(Uri.parse(api.baseUrl + '/projects' + extra));
     final data = jsonDecode(res.body);
-    print('------------------------');
-    print(data);
     if (data['message'] == 'ok') {
       if (data['projects'] == null) return [];
       print(data['projects']);
@@ -25,13 +22,27 @@ class ProjectRepository extends BaseRepository {
     return [];
   }
 
+  Future<void> addRequest(Project project) async {
+    await api.client
+        .post(Uri.parse(api.baseUrl + '/project/${project.id}/add-request'));
+  }
+
+  Future<void> acceptRequest(Project project, User user) async {
+    await api.client.post(Uri.parse(
+        api.baseUrl + '/project/${project.id}/add-member/${user.id}'));
+  }
+
   Future<void> removeRequest(Project project, User user) async {
     await api.client.delete(Uri.parse(
         api.baseUrl + '/project/${project.id}/delete-request/${user.id}'));
   }
 
   Future<void> addProject(AddProjectState state) async {
-    final res = await api.client.post(Uri.parse(api.baseUrl + '/project'),
-        body: state.project.toJson());
+    final project = state.project.copyWith(
+        photoURL: state.project.localImage?.url,
+        additionalMaterials:
+            state.project.localMaterials?.map((e) => e.url).toList());
+    await api.client
+        .post(Uri.parse(api.baseUrl + '/project'), body: project.toJson());
   }
 }

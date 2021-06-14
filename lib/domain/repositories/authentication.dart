@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:get_it/get_it.dart';
 import 'package:moscow/domain/models/user.dart';
+import 'package:moscow/domain/services/Messaging.dart';
 import 'package:moscow/modules/registration/cubit/login_cubit.dart';
 
 import '../../constants.dart';
@@ -41,17 +43,14 @@ class AuthenticationRepository extends BaseRepository {
   }
 
   Future<User?> register(LoginState state) async {
-    final res = await client.post(Uri.parse(api.baseUrl + '/user'), body: {
-      'fio': state.name.value,
-      'password': state.password.value,
-      'about': state.about.value,
-      'SNILS': state.snils.value,
-      'phone': state.phone.value,
-      'socials': '',
-      'email': state.email.value,
-      'skills': state.skills
-    });
+    print(state.user.localImage);
+    var body =
+        state.user.copyWith(photoUrl: state.user.localImage?.url).toJson();
+    print(body);
+    body.addAll({'password': state.password});
+    final res = await client.post(Uri.parse(api.baseUrl + '/user'), body: body);
     final data = jsonDecode(res.body);
+    print(data);
     if (data['message'] == 'ok') {
       storage.save(AUTH_SAVE_KEY, data['token']);
       _controller.add(AuthenticationStatus.authenticated);
@@ -61,12 +60,11 @@ class AuthenticationRepository extends BaseRepository {
   Future<User?> logIn({
     required String username,
     required String password,
+    required String token,
   }) async {
     var res = await client.post(Uri.parse(api.baseUrl + '/auth'),
         headers: {'Content-Type': 'application/json'},
-        body: {'email': username, 'password': password});
-    final ans = jsonDecode(res.body);
-    print(ans['message']);
+        body: {'email': username, 'password': password, 'deviceToken': token});
     if (res.statusCode == 200) {
       final token = jsonDecode(res.body)['token'];
       await storage.save(AUTH_SAVE_KEY, token);
@@ -76,6 +74,7 @@ class AuthenticationRepository extends BaseRepository {
 
   void logOut() {
     _controller.add(AuthenticationStatus.unauthenticated);
+    storage.delete(AUTH_SAVE_KEY);
   }
 
   void dispose() => _controller.close();

@@ -1,19 +1,29 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http/http.dart';
 import 'package:moscow/domain/models/project.dart';
 import 'package:moscow/domain/models/user.dart';
 import 'package:moscow/domain/utils/common_items.dart';
 import 'package:moscow/modules/app/bloc/app_cubit.dart';
+import 'package:moscow/modules/app/bloc/loading_cubit.dart';
 import 'package:moscow/modules/home/screens/profile/widgets/skills_widget.dart';
 import 'package:moscow/modules/start_team/bloc/project_cubit.dart';
 import 'package:moscow/modules/start_team/bloc/project_state.dart'
     as cubit_state;
+import 'package:moscow/modules/start_team/widgets/messages/widgets/utils.dart';
 import 'package:moscow/modules/start_team/widgets/project/widgets/swipe_view.dart';
 import 'package:moscow/styles/colors.dart';
 import 'package:moscow/widgets/info_card.dart';
+import 'package:moscow/widgets/shimmers/user.dart';
 import 'package:moscow/widgets/widgets.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:open_file/open_file.dart';
 
 import 'widgets/user_list_view.dart';
 
@@ -31,7 +41,6 @@ class ProjectDetailView extends StatelessWidget {
       appBar: AppBar(
         shadowColor: Colors.transparent,
         backgroundColor: Colors.transparent,
-        title: Text(project.name, style: TextStyle(fontSize: 32)),
         leading: BackButton(
           color: Colors.black,
         ),
@@ -42,8 +51,10 @@ class ProjectDetailView extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Text(project.name,
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500)),
               Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
+                padding: const EdgeInsets.only(bottom: 8.0, top: 8.0),
                 child: Text(
                   project.area,
                   style: TextStyle(fontWeight: FontWeight.normal, fontSize: 16),
@@ -57,8 +68,12 @@ class ProjectDetailView extends StatelessWidget {
                 ),
               ),
               ProjectSkillsWidget(
+                color: Colors.white,
                 skills: project.skills ?? [],
                 hightlight: context.read<AppCubit>().state.user.skills,
+              ),
+              SizedBox(
+                height: 8,
               ),
               Text('С этим проектом у вас совпадают ${_parseSkills(commonItems([
                     project.skills,
@@ -123,6 +138,13 @@ class ProjectDetailView extends StatelessWidget {
                 builder: (context) =>
                     InfoPage(title: 'Технологии продукта', data: [
                   InfoData(
+                      content: '',
+                      type: InfoDataType.link,
+                      title: 'Дополнительные материалы',
+                      builder: (context) => MaterialsPage(
+                            materials: project.additionalMaterials,
+                          )),
+                  InfoData(
                       title: 'Интеллектуальная собственность',
                       content: project.intellectualProperty),
                   InfoData(
@@ -170,10 +192,20 @@ class ProjectDetailView extends StatelessWidget {
                     builder: (context) => BlocProvider.value(
                         value: bloc, child: SwipeView(project: project))),
               if (!project.isMember)
-                PrimaryButton(
-                  child: Text('Подать заявку'),
-                  onPressed: () {},
-                )
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: PrimaryButton(
+                    child: Text('Подать заявку'),
+                    onPressed: () async {
+                      context.read<LoadingCubit>().startLoading();
+                      await context.read<ProjectCubit>().addRequest(project);
+                      context.read<LoadingCubit>().stopLoading();
+                    },
+                  ),
+                ),
+              SizedBox(
+                height: 50,
+              )
             ],
           ),
         ),
@@ -196,11 +228,220 @@ class ProjectDetailView extends StatelessWidget {
   }
 }
 
+class MaterialsPage extends StatelessWidget {
+  const MaterialsPage({Key? key, required this.materials}) : super(key: key);
+
+  final List<String>? materials;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          title:
+              Text('Дополнительные материалы', style: TextStyle(fontSize: 24)),
+        ),
+        body: materials == null
+            ? Center(child: Text('Ничего нет :('))
+            : ListView.separated(
+                itemCount: materials!.length,
+                separatorBuilder: (context, index) => Divider(),
+                itemBuilder: (context, index) {
+                  return FileAttachment(
+                    url: materials![index],
+                  );
+                },
+              ));
+  }
+
+  String _processName(String url) {
+    return url.split('?').first.split('-').last;
+  }
+}
+
+class FileAttachment extends StatefulWidget {
+  final String url;
+  final DateTime? createdAt;
+
+  const FileAttachment({
+    Key? key,
+    required this.url,
+    this.createdAt,
+  }) : super(key: key);
+
+  @override
+  _FileAttachmentState createState() => _FileAttachmentState();
+}
+
+class _FileAttachmentState extends State<FileAttachment> {
+  bool loading = false;
+  bool downloaded = false;
+  double progress = 0;
+  var httpClient = HttpClient();
+  late String filename;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return GestureDetector(
+      onTap: () {
+        if (!downloaded) {
+          _startDownload();
+        } else {
+          _openFile(context);
+        }
+      },
+      child: Material(
+        color: secondaryWhite,
+        child: Padding(
+          padding: const EdgeInsets.all(6.0),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 45,
+                height: 45,
+                child: Material(
+                  shape: CircleBorder(),
+                  color: Colors.white,
+                  child: Padding(
+                    padding: const EdgeInsets.all(2.0),
+                    child: Center(
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Icon(
+                            downloaded
+                                ? Icons.insert_drive_file
+                                : Icons.arrow_downward,
+                            size: 20,
+                          ),
+                          if (loading)
+                            Padding(
+                              padding: EdgeInsets.zero,
+                              child: Container(
+                                  padding: EdgeInsets.zero,
+                                  height: 40,
+                                  width: 40,
+                                  child: CircularProgressIndicator(
+                                    value: progress,
+                                    strokeWidth: 2,
+                                  )),
+                            )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              Flexible(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Row(
+                          children: [
+                            Text(filename,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                )),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            if (widget.createdAt != null)
+                              Text(
+                                  DateFormat.Hm('ru_RU')
+                                      .format(widget.createdAt!),
+                                  textAlign: TextAlign.right,
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.white.withOpacity(0.5))),
+                          ],
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    filename = widget.url.split('?').first.split('-').last;
+  }
+
+  void _openFile(BuildContext context) async {
+    var dir = (await getApplicationDocumentsDirectory()).path;
+    OpenFile.open('$dir/$filename');
+  }
+
+  Future<File> _startDownload() async {
+    setState(() {
+      loading = true;
+    });
+    final request = Request('GET', Uri.parse(widget.url));
+    final response = await Client().send(request);
+    final contentLength = response.contentLength;
+    var dir = (await getApplicationDocumentsDirectory()).path;
+    var file = File('$dir/$filename');
+    var bytes = <int>[];
+    response.stream.listen(
+      (List<int> newBytes) {
+        setState(() {
+          bytes.addAll(newBytes);
+          final downloadedLength = bytes.length;
+          progress = downloadedLength / contentLength!;
+        });
+      },
+      onDone: () async {
+        await file.writeAsBytes(bytes);
+      },
+      onError: (e) {
+        print(e);
+      },
+      cancelOnError: true,
+    );
+
+    setState(() {
+      loading = false;
+      downloaded = true;
+    });
+    return file;
+  }
+}
+
+enum InfoDataType { field, link }
+
 class InfoData {
   final String title;
   final String content;
+  final InfoDataType type;
+  final WidgetBuilder? builder;
 
-  InfoData({required this.title, required this.content});
+  InfoData(
+      {this.builder,
+      required this.title,
+      required this.content,
+      this.type = InfoDataType.field});
 }
 
 class InfoPage extends StatelessWidget {
@@ -221,6 +462,40 @@ class InfoPage extends StatelessWidget {
         body: ListView.builder(
             itemBuilder: (context, index) {
               final d = data[index];
+              if (d.type == InfoDataType.link) {
+                return Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        boxShadow: primaryShadow,
+                        borderRadius: BorderRadius.circular(16)),
+                    child: Material(
+                      type: MaterialType.transparency,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(16),
+                        onTap: () {
+                          Navigator.of(context)
+                              .push(MaterialPageRoute(builder: d.builder!));
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(d.title,
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500)),
+                              Icon(Icons.chevron_right)
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }
               return Padding(
                 padding: const EdgeInsets.all(12.0),
                 child: Column(
@@ -241,66 +516,6 @@ class InfoPage extends StatelessWidget {
               );
             },
             itemCount: data.length));
-  }
-}
-
-class UserShimmer extends StatelessWidget {
-  const UserShimmer({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Shimmer.fromColors(
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    height: 130,
-                    width: 130,
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12)),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                      height: 130,
-                      width: 150,
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12))),
-                )
-              ],
-            ),
-            Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                      height: 50,
-                      width: 120,
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12))),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                      height: 50,
-                      width: 120,
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12))),
-                )
-              ],
-            )
-          ],
-        ),
-        baseColor: Colors.grey[300]!,
-        highlightColor: Colors.grey[100]!);
   }
 }
 

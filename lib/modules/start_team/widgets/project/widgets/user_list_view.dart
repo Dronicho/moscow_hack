@@ -71,6 +71,7 @@ class UserListView extends StatelessWidget {
                                           backgroundColor: Colors.transparent,
                                           context: context,
                                           builder: (context) => LikeModal(
+                                                user: user,
                                                 onPressed:
                                                     (sat, shool, groups) =>
                                                         null,

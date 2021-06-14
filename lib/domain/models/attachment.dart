@@ -3,18 +3,6 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'attachment.freezed.dart';
 part 'attachment.g.dart';
 
-class SendingAttachment {
-  bool sent;
-  // TODO: fix it
-  // DeviceImage image;
-  // LocalImage localImage;
-  String? url;
-
-  SendingAttachment()
-      : sent = false,
-        url = null;
-}
-
 @freezed
 class Attachment with _$Attachment {
   const factory Attachment({

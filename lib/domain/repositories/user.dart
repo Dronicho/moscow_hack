@@ -10,7 +10,7 @@ class UserRepository extends BaseRepository {
     try {
       var res = await api.client.get(Uri.parse(api.baseUrl + '/user'));
       final data = jsonDecode(res.body);
-      print(data['user']['id']);
+      print(data['user']);
       return User.fromJson(data['user']);
     } catch (err) {
       print(err);
@@ -21,7 +21,6 @@ class UserRepository extends BaseRepository {
     try {
       var res = await api.client.get(Uri.parse(api.baseUrl + '/user/$id'));
       final data = jsonDecode(res.body);
-      print('123');
       print(data);
       return User.fromJson(data['user']);
     } catch (err) {

@@ -3,21 +3,21 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>960962364636-5an25kegcjv0gda7uc7h89cdi4ui8jmd.apps.googleusercontent.com</string>
+	<string>846714702673-0h4blvbuhsl66aeablh1unfhgnnlg1h1.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.960962364636-5an25kegcjv0gda7uc7h89cdi4ui8jmd</string>
+	<string>com.googleusercontent.apps.846714702673-0h4blvbuhsl66aeablh1unfhgnnlg1h1</string>
 	<key>API_KEY</key>
-	<string>AIzaSyA1FCDgWj2dD969w71ydvQIAjHMxkUFdds</string>
+	<string>AIzaSyCrDtR7b6w94M8fsCVeGYShR0ANHxwBQ5Q</string>
 	<key>GCM_SENDER_ID</key>
-	<string>960962364636</string>
+	<string>846714702673</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.devHack2</string>
+	<string>com.example.moscow</string>
 	<key>PROJECT_ID</key>
-	<string>devhack-84d2f</string>
+	<string>i-moscow</string>
 	<key>STORAGE_BUCKET</key>
-	<string>devhack-84d2f.appspot.com</string>
+	<string>i-moscow.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -29,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:960962364636:ios:5cb86a3c9131d060856019</string>
+	<string>1:846714702673:ios:3f2ee1d42dc135e59d6170</string>
 </dict>
 </plist>

@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:get_it/get_it.dart';
+import 'package:moscow/domain/services/api.dart';
 import 'package:moscow/modules/app/bloc/app_cubit.dart';
 import 'package:moscow/styles/colors.dart';
 import 'package:moscow/widgets/primary_icon_button.dart';
@@ -15,11 +19,15 @@ class UserSkillsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<AppCubit, AppState>(
       builder: (context, state) {
-        return _SkillsWrapper(
+        return SkillsWrapper(
+            color: Colors.white,
             withButton: withButton,
             onDeleted: (value) {
-              context.read<AppCubit>().updateUser(state.user
-                  .copyWith(skills: state.user.skills..remove(value)));
+              final newSkills = [...state.user.skills];
+              newSkills.remove(value);
+              context
+                  .read<AppCubit>()
+                  .updateUser(state.user.copyWith(skills: newSkills));
             },
             skills: state.user.skills,
             onCreated: (res) {
@@ -42,7 +50,7 @@ class ProjectSkillsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _SkillsWrapper(
+    return SkillsWrapper(
       skills: skills,
       color: color,
       withButton: true,
@@ -54,8 +62,8 @@ class ProjectSkillsWidget extends StatelessWidget {
   }
 }
 
-class _SkillsWrapper extends StatefulWidget {
-  const _SkillsWrapper(
+class SkillsWrapper extends StatefulWidget {
+  const SkillsWrapper(
       {Key? key,
       required this.skills,
       required this.withButton,
@@ -79,64 +87,82 @@ class _SkillsWrapper extends StatefulWidget {
   final bool showButton;
 
   @override
-  __SkillsWrapperState createState() => __SkillsWrapperState();
+  _SkillsWrapperState createState() => _SkillsWrapperState();
 }
 
-class __SkillsWrapperState extends State<_SkillsWrapper> {
+class _SkillsWrapperState extends State<SkillsWrapper> {
   bool _editing = false;
+  bool _expanded = false;
+  bool _expandable = true;
 
   @override
   void initState() {
     super.initState();
     setState(() {
       _editing = !widget.withButton;
+      _expanded = widget.skills.length < 4;
+      _expandable = !(widget.skills.length < 4);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      alignment: WrapAlignment.start,
-      runAlignment: WrapAlignment.start,
-      spacing: 5.0,
-      runSpacing: 5.0,
-      children: [
-        ...widget.skills.map(
-          (e) => _buildChip(e),
-        ),
-        if (_editing)
-          AnimatedOpacity(
-            duration: Duration(milliseconds: 200),
-            opacity: !widget.withButton || _editing ? 1 : 0,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4.0),
-              child: GestureDetector(
-                  onTap: () async {
-                    final res = await showDialog<String>(
-                        context: context,
-                        builder: (context) => AddSkillDialog());
-                    if (res != null && res.isNotEmpty) {
-                      widget.onCreated(res);
-                    }
-                  },
-                  child: Chip(
-                    label: Icon(Icons.add),
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTap: () {
+        if (!_expandable) return;
+        setState(() {
+          _expanded = !_expanded;
+        });
+      },
+      child: Container(
+        child: Wrap(
+          alignment: WrapAlignment.start,
+          runAlignment: WrapAlignment.start,
+          spacing: 5.0,
+          runSpacing: 5.0,
+          children: [
+            ...widget.skills
+                .sublist(0, _expanded ? widget.skills.length : 4)
+                .map(
+                  (e) => _buildChip(e),
+                ),
+            if (!_expanded) _buildChip('.....'),
+            if (_editing)
+              AnimatedOpacity(
+                duration: Duration(milliseconds: 200),
+                opacity: !widget.withButton || _editing ? 1 : 0,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                  child: GestureDetector(
+                      onTap: () async {
+                        final res = await showDialog<String>(
+                            context: context,
+                            builder: (context) => AddSkillDialog());
+                        if (res != null && res.isNotEmpty) {
+                          widget.onCreated(res);
+                        }
+                      },
+                      child: Chip(
+                        label: Icon(Icons.add),
+                      )),
+                ),
+              ),
+            if (widget.showButton)
+              Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: PrimaryIconButton(
+                    onPressed: () {
+                      setState(() {
+                        _editing = !_editing;
+                      });
+                    },
+                    icon: Icons.edit,
                   )),
-            ),
-          ),
-        if (widget.showButton)
-          Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: PrimaryIconButton(
-                onPressed: () {
-                  setState(() {
-                    _editing = !_editing;
-                  });
-                },
-                icon: Icons.edit,
-              )),
-        ...(widget.extra ?? [])
-      ],
+            ...(widget.extra ?? [])
+          ],
+        ),
+      ),
     );
   }
 
@@ -156,6 +182,10 @@ class __SkillsWrapperState extends State<_SkillsWrapper> {
       );
     }
     return Chip(
+        visualDensity: _expandable
+            ? VisualDensity(vertical: VisualDensity.minimumDensity)
+            : null,
+        padding: EdgeInsets.zero,
         backgroundColor: widget.color,
         label: Text(name),
         deleteIcon: _editing ? RemoveButton() : null,
@@ -187,20 +217,15 @@ class AddSkillDialog extends StatefulWidget {
 }
 
 class _AddSkillDialogState extends State<AddSkillDialog> {
+  final _api = GetIt.I<Api>();
   final _controller = TextEditingController();
 
-  Future<List<String>> _suggetionsCallback(String search) {
-    return Future.delayed(
-        Duration(milliseconds: 200),
-        () => [
-              'ф',
-              'ф',
-              'ф',
-              'ф',
-              'ф',
-              'ф',
-              'ф',
-            ]);
+  Future<List<String>> _suggetionsCallback(String search) async {
+    final res = await _api.client
+        .get(Uri.parse(_api.baseUrl + '/auto-completion/$search'));
+    final data = jsonDecode(res.body);
+    print(data);
+    return data['autoCompletions'].cast<String>();
   }
 
   @override
@@ -230,8 +255,10 @@ class _AddSkillDialogState extends State<AddSkillDialog> {
                 _controller.text = item;
                 setState(() {});
               },
-              itemBuilder: (context, String item) =>
-                  ListTile(title: Text(item)),
+              itemBuilder: (context, String item) {
+                print(item);
+                return ListTile(title: Text(item));
+              },
             ),
             SizedBox(
               height: 10,

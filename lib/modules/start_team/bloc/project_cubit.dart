@@ -14,6 +14,14 @@ class ProjectCubit extends Cubit<ProjectState> {
   UsersCubit _usersCubit;
   AppCubit bloc;
 
+  Future<void> addRequest(model.Project project) async {
+    await _repository.addRequest(project);
+  }
+
+  Future<void> acceptRequest(model.Project project, User user) async {
+    await _repository.acceptRequest(project, user);
+  }
+
   void loadProjects() async {
     emit(ProjectStateLoading());
     final projects = await _repository.loadProjects();

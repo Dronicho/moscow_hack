@@ -1,13 +1,16 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:formz/formz.dart';
+import 'package:get_it/get_it.dart';
 import 'package:moscow/domain/repositories/repositories.dart';
+import 'package:moscow/domain/services/messaging.dart';
 import 'package:moscow/modules/login/models/models.dart';
 
 part 'login_state.dart';
 
 class LoginCubit extends Cubit<LoginState> {
   LoginCubit(this._authenticationRepository) : super(const LoginState());
+  final _storage = GetIt.I<Messaging>();
 
   final AuthenticationRepository _authenticationRepository;
 
@@ -32,6 +35,7 @@ class LoginCubit extends Cubit<LoginState> {
     emit(state.copyWith(status: FormzStatus.submissionInProgress));
     try {
       await _authenticationRepository.logIn(
+        token: (await _storage.messaging.getToken())!,
         username: state.username.value,
         password: state.password.value,
       );

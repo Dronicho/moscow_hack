@@ -16,7 +16,6 @@ import 'package:intl/intl.dart';
 import 'widgets/skills_widget.dart';
 
 class ProfilePage extends StatelessWidget {
-  final _picker = ImagePicker();
   final _storage = GetIt.I<FirebaseStorageService>();
 
   ProfilePage({Key? key}) : super(key: key);
@@ -44,15 +43,6 @@ class ProfilePage extends StatelessWidget {
                           Text('При нажатии на поле его можно отредактировать',
                               style: TextStyle(fontSize: 10))
                         ]),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.star,
-                          color: Colors.yellow,
-                        ),
-                        Text('4.8')
-                      ],
-                    )
                   ],
                 ),
                 SizedBox(
@@ -66,19 +56,14 @@ class ProfilePage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     ImageCard(
+                        height: 150,
+                        width: 150,
                         editable: false,
-                        imageUrl:
-                            'https://images.unsplash.com/photo-1557862921-37829c790f19?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1651&q=80'),
-                    SizedBox(width: 20),
+                        imageUrl: user.photoUrl),
+                    SizedBox(width: 8),
                     Flexible(
                       flex: 1,
-                      child: InfoCard(
-                        name: 'name',
-                        editable: false,
-                        title: 'Andrey Nebogatikov Stanislaw',
-                        style: TextStyle(fontSize: 22),
-                        height: 130,
-                      ),
+                      child: UserCard(user: user),
                     ),
                   ],
                 ),
@@ -127,45 +112,52 @@ class ProfilePage extends StatelessWidget {
                 ),
                 UserSkillsWidget(),
                 SizedBox(height: 16),
-                InfoCard(
-                    name: 'Снилс',
-                    onChange: (value) {
-                      context
-                          .read<AppCubit>()
-                          .updateUser(user.copyWith(snils: value));
-                    },
-                    title: user.snils,
-                    subtitle: 'Снилс',
-                    style:
-                        TextStyle(fontWeight: FontWeight.w500, fontSize: 24)),
                 SizedBox(
                   height: 16,
                 ),
-                DataCard(
-                    name: 'Образование',
-                    title: 'Университет ИТМО',
-                    subtitle: 'Программная инженерия',
-                    body: 'бакалaвр',
-                    start: DateTime.now(),
-                    end: DateTime.now()),
+                if (user.education != null)
+                  DataCard(
+                      name: 'Образование',
+                      title: user.education![0]!.name,
+                      subtitle: user.education![0]!.specialty,
+                      body: user.education![0]!.degree,
+                      start: user.education![0]!.dateStart!,
+                      end: user.education![0]!.dateStart!),
                 SizedBox(
                   height: 16,
                 ),
-                DataCard(
-                  name: 'Образование',
-                  title: 'Университет ИТМО',
-                  subtitle: 'Программная инженерия',
-                  body: 'бакалaвр',
-                  start: DateTime.now(),
-                  end: DateTime.now(),
+                if (user.work != null)
+                  DataCard(
+                    name: 'Работа',
+                    title: user.work![0]!.name,
+                    subtitle: user.work![0]!.position,
+                    body: user.work![0]!.responsibilities,
+                    start: user.work![0]!.dateStart!,
+                    end: user.work![0]!.dateEnd!,
+                  ),
+                SizedBox(
+                  height: 16,
                 ),
-                // ElevatedButton(
-                //     onPressed: () {
-                //       context
-                //           .read<AuthenticationBloc>()
-                //           .add(AuthenticationLogoutRequested());
-                //     },
-                //     child: Text('Выйти'))
+                RowCard(
+                  title: 'СНИЛС',
+                  onChange: (value) {
+                    context
+                        .read<AppCubit>()
+                        .updateUser(user.copyWith(snils: value));
+                  },
+                  value: user.snils ?? '',
+                ),
+                SizedBox(
+                  height: 16,
+                ),
+                PrimaryButton(
+                  child: Text('Выйти'),
+                  onPressed: () {
+                    context
+                        .read<AuthenticationBloc>()
+                        .add(AuthenticationLogoutRequested());
+                  },
+                )
               ],
             ),
           );

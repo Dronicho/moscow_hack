@@ -2,50 +2,70 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:moscow/modules/app/bloc/loading_cubit.dart';
 import 'package:moscow/styles/colors.dart';
+import 'package:moscow/widgets/shimmers/container.dart';
+import 'package:shimmer/shimmer.dart';
 
 class PrimaryButton extends StatelessWidget {
   final VoidCallback? onPressed;
-  final bool loading;
   final Widget child;
+  final bool? loading;
   final Color? color;
-  PrimaryButton(
-      {Key? key,
-      this.onPressed,
-      this.loading = false,
-      required this.child,
-      this.color})
-      : super(key: key);
+  PrimaryButton({
+    Key? key,
+    this.onPressed,
+    required this.child,
+    this.color,
+    this.loading,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-          gradient: onPressed != null ? primaryGradient : null,
-          color: onPressed == null ? secondaryWhite : null,
-          borderRadius: BorderRadius.circular(12)),
-      child: TextButton(
-        onPressed: onPressed,
-        style: TextButton.styleFrom(
-            padding: const EdgeInsets.all(10), primary: Colors.transparent),
-        child: Center(child: BlocBuilder<LoadingCubit, bool>(
-          builder: (context, state) {
-            if (state) {
-              return SizedBox(
-                height: 20,
-                width: 20,
-                child: CircularProgressIndicator(
-                  strokeWidth: 1,
-                  backgroundColor: Colors.white,
-                ),
-              );
-            }
-            return DefaultTextStyle(
-              child: child,
-              style: TextStyle(color: Colors.black, fontSize: 16),
-            );
-          },
-        )),
-      ),
+    return BlocBuilder<LoadingCubit, bool>(
+      builder: (context, state) {
+        final _loading = state || (loading ?? false);
+        return AnimatedContainer(
+            duration: Duration(milliseconds: 200),
+            decoration: BoxDecoration(
+                gradient:
+                    onPressed != null && color == null ? primaryGradient : null,
+                color: onPressed == null ? secondaryWhite : color,
+                borderRadius: BorderRadius.circular(12)),
+            child: AnimatedSwitcher(
+              duration: Duration(milliseconds: 200),
+              child: _loading
+                  ? Stack(
+                      children: [
+                        ContainerShimmer(
+                          height: 50,
+                        ),
+                        Positioned.fill(
+                          child: Center(
+                            child: DefaultTextStyle(
+                              child: child,
+                              style:
+                                  TextStyle(color: Colors.black, fontSize: 16),
+                            ),
+                          ),
+                        )
+                      ],
+                    )
+                  : Container(
+                      height: 50,
+                      child: InkWell(
+                        onTap: _loading ? null : onPressed,
+                        child: Center(child: BlocBuilder<LoadingCubit, bool>(
+                          builder: (context, state) {
+                            return DefaultTextStyle(
+                              child: child,
+                              style:
+                                  TextStyle(color: Colors.black, fontSize: 16),
+                            );
+                          },
+                        )),
+                      ),
+                    ),
+            ));
+      },
     );
   }
 }
