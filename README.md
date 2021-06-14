@@ -8,7 +8,7 @@
 
 ### Выбор технологий
 
-Приложение полностью написано на ![Flutter Logo][][Flutter](https://flutter.dev)
+Приложение полностью написано на [Flutter](https://flutter.dev)
 Почему? Потому что кроссплатформа - это круто, а среди всех кроссплатформенных фреймворков Flutter, по моему мнению, является лучшим выбором,
 благодаря тому, что он компилирует исходный код в нативный код платформы (Swift, Kotlin), что позволяет получить большой рост производительности
 
@@ -44,6 +44,8 @@ module_name/
 ```
 `view.dart` и `widgets/` содержат весь UI,
 
+`page.dart` обертка над `view.dart` обычно нужна, для того, чтобы создать и добавить `Bloc` в контекст
+
 `bloc/` бизнес логика
 ### Зависимости
 в проекты были использованы следующие зависимости
@@ -59,8 +61,8 @@ module_name/
 * `firebase_core` - ключевой пакет для инициализации Firebase
 * `firebase_messaging` - пакет для получения push-уведомлений
 * `firebase_storage` - пакет для работы с объктным хранилищем (для фотографий и дополнительных материалом проекта)
+
 Из того, что не успели реализовать
 * `firestore` - база данных с обновлениями в реальном времени, хотели использовать для чата
 
 [app logo]: https://github.com/Dronicho/moscow_hack/blob/master/images/title.png
-[flutter logo]: https://www.google.com/url?sa=i&url=https%3A%2F%2Ficon-icons.com%2Ficon%2Ffile-type-flutter%2F130599&psig=AOvVaw0bMgqjOl_NDIgOq0TAbcTy&ust=1623721145707000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCJDuk-P-lfECFQAAAAAdAAAAABAD
