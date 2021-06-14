@@ -1,7 +1,6 @@
 ![App Logo][]
 
 Это репозиторий с исходным кодом для нашего приложения, написанного во время [Moscow city hack](https://moscityhack.innoagency.ru)
-[![Flutter version](https://img.shields.io/pypi/pyversions/ansicolortags.svg)](https://pypi.python.org/pypi/ansicolortags/)
 
 ## Описание
 
